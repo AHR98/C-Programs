@@ -1,0 +1,117 @@
+//MATRIZ INCIDENCIA COMPROBACIÓN
+#include <stdio.h>
+#include <stdlib.h>
+ const int MAX=100;
+void incidencia(int matriz[][MAX], int n, int m);
+
+void incidencia(int matriz[][MAX], int n, int m)
+{
+	//Consideraciones de matriz de incidencia para un grafo no dirigido
+	int contador,i,j,grado;
+	int vector[n];
+	for(i=0;i<n;i++)
+	{
+		contador=0;
+		grado=0; //grado de nodo
+		for(j=0;j<m;j++)
+		{
+			if(matriz[j][i]==1) //si la columna de la matriz tiene un 1
+			{
+				contador=contador+1; //se agrega al contador
+			}
+			if(matriz[j][i]==2) //si la columna de la matriz tiene un 2
+			{
+				contador==2;
+				printf("\nHay un bucle en [%d][%d]\n", j,i);
+			}
+			if(matriz[i][j]==1) //Contamos los 1's por fila
+			{
+				grado=grado+1;
+			}
+			if(matriz[i][j]==2) //contamos los 2's por fila
+			{
+				grado=grado+2;
+			}			
+		}
+		if(contador!=2)
+		{
+			printf("\nNo es una matriz de incidencia.\n");
+			i=n;
+			j=m; //Para romper el ciclo y que no haga ninguna consideración
+		}
+		else
+		{
+			printf("Grado del nodo %d es: %d\n",i,grado);
+			if(grado==0) //Un renglon con unicamente cero
+			{
+				printf("El nodo %d es un nodo aislado.\n",i);
+			}
+			if(grado==1) //Un renglon con unicamente un 1 y lo demas ceros.
+			{
+				printf("El nodo %d es un nodo colgante.\n",i);
+			}
+		}
+
+	}
+	contador=0; //iniciamos el contador
+	int k=0;
+	for(i=0;i<n;i++)
+	{
+		contador=0;
+		for(j=0;j<m;j++)
+		{
+			if(matriz[j][k]==matriz[j][i+1])
+			{
+				contador++;
+				if(i==n)
+					printf("Es linea paralela\n");
+			}
+			else
+			{
+				contador=0;
+			}
+			if(j==n-1)
+			{
+				k++;
+			}
+		}
+		k=0;
+	}
+	
+}
+void main()
+{
+	int matriz[100][100];
+	int n,m,i,j; //Filas y columnas
+	printf("\t\tMATRIZ INCIDENCIA\n");
+	//LECTURA DE DATOS.
+	printf("De que tamanio es tu matriz? NxM	");
+	scanf("%d", &n);
+	scanf("%d", &m);
+	printf("\nEscribe los datos de tu matriz\n");
+	for(i=0;i<n;i++) //fila
+	{
+		for(j=0;j<m;j++) //columna
+		{
+			printf("\nIngresa el elemento %d %d:	",i+1,j+1);
+			scanf("%d", &matriz[i][j]);
+			while(matriz[i][j]>2 || matriz[i][j]<-1) //En nuestras matrices no hay #'s mayor a 2 o menores a -1
+			{
+				printf("\nPor favor solo escribe 1's, 0's o 2's\n");
+				scanf("%d", &matriz[i][j]);
+			}
+
+		}
+	}
+	
+	for(i=0;i<n;i++)
+	{
+		for(j=0;j<m;j++)
+		{
+			printf("|%d|", matriz[i][j]);
+		}
+		printf("\n");
+	}
+	incidencia(matriz, n,m);
+	
+}
