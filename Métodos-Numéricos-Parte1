@@ -24,6 +24,4 @@ void main()
 		case 2:	maininterpolacion();break;
 		case 3: mainprograma3();break;
 	}
-	printf("\n\nEQUIPO:\n\tArturo Martinez Espinosa\n\tAlejandra Huerta Rangel\n\tCaleb Elihud Abdelrrague Manzanares\n\n\n");
-
 }
