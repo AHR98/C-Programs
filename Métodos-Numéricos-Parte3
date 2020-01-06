@@ -1,0 +1,389 @@
+
+//Funciones de Mï¿½todo de Newton
+void leer_tabla(); //Funcion que lee los puntos [x,y] 
+int menuinterpolacion(); //menu de seleccion entre Interpolacion por Newton y Ajuste de curvas
+void interpolacion(float A[], float B[], int C); //Funcion de Interpolacion por Newton
+//Funciones de Spline Cï¿½bico
+void datos(int *tam, float mat1[][102], int n, float h[],float f[]);
+void esc_data(int tam1, float mat2[][102]);
+void solucion(int tam, float mat[][102], int n, float h[]);
+void mainspline();
+
+void datos(int *tam,float mat1[][102], int n, float h[], float f[])
+{
+    int j,k;
+    *tam=(n-2);
+    printf("El tamanio de la matriz es: %d\n",*tam);
+    for(j=1;j<=*tam;j++)
+    {
+        for(k=1;k<=*tam;k++)
+        {
+            if(k<=(j+2))
+            {
+                if(k==j)
+                    mat1[j][k]=(2*(h[j-1]+h[j]));
+                 if(k==(j+1))
+                    mat1[j][k]=h[j];
+                if(k==(j-1))
+                    mat1[j][k]=h[j-1];
+            }
+            else
+            mat1[j][k]=0;
+        }
+        
+    }
+    for(j=1;j<=*tam;j++){
+        
+        mat1[j][*tam+1]=(6*(f[j]-f[j-1]));
+    }
+    }
+
+void esc_data(int tamano, float mat2[][102])
+{
+    int x,y;
+    for(x=1;x<=tamano;x++)
+        {
+        for(y=1;y<=(tamano+1);y++)
+        {
+            printf("|| %f ||",mat2[x][y]);
+            if(y==tamano)
+             printf("   |");
+    }
+        printf("\n");
+    }
+    }
+
+void solucion(int tam, float mat[][102], int n, float h[])
+{
+    int res,i,j,k,m;
+    float col_pivote,x;
+
+    for(i=1;i<=tam;i++)
+        {
+        res=0;m=i;
+        while(res==0)
+        {
+           if((mat[m][i]>0.0000001)||((mat[m][i]<-0.0000001)))
+           {
+                res=1;
+
+   			}
+            else
+                m++;
+        }
+        col_pivote=mat[m][i];
+        for(j=1;j<=(tam+1);j++)
+            {
+            x=mat[m][j];
+            mat[m][j]=mat[i][j];
+            mat[i][j]=x/col_pivote;
+        }
+        for(k=i+1;k<=tam;k++)
+            {
+            x=mat[k][i];
+            for(j=i;j<=(tam+1);j++)
+            {
+                mat[k][j]=mat[k][j]-x*mat[i][j];
+        }
+    }
+    }
+
+    for(i=tam;i>=1;i--)
+        for(j=(i-1);j>=1;j--)
+        {
+        mat[j][tam+1]=mat[j][tam+1]-mat[j][i]*mat[i][tam+1];
+        mat[j][i]=0;
+    }
+}
+
+void mainspline()
+{
+	char respuesta, prin;
+	int i,j,l,n,opci;
+	float x[10],y[10],h[10],f[10],s[7],a[10],b[10],c[10],d[10],r[10],t[10];
+	salto:
+	do{
+		
+		printf ("Cuantos puntos son en la tabla?\n");
+		scanf("%d",&n);
+	
+		j=(n-1);
+		l=(j-1);
+		x[10]=x[i];
+		y[10]=y[i];
+		h[10]=h[i];
+		f[10]=f[i];
+		a[10]=a[i];
+		b[10]=b[i];
+		c[10]=c[i];
+		d[10]=d[i];
+		r[10]=r[i];
+		t[10]=t[i];
+	
+		for(i=0;i<=j;i++)
+		{
+			printf("Por favor ingrese x%d\n",i);
+			scanf("%f",&x[i]);
+		};
+		
+		for(i=0;i<=l;i++)
+		{
+			h[i]=(x[i+1]-x[i]);
+		};
+		
+		for(i=0;i<=j;i++)
+		{
+			printf("Por favor ingrese y%d\n",i);
+			scanf("%f",&y[i]);
+		}
+		
+		for(i=0;i<=l;i++)
+		{
+			f[i]=((y[i+1]-y[i])/h[i]);
+		};
+		printf("Si se equivoco y desea volver a llenar los datos presione 1, si no, cualquier otra tecla\n");
+		scanf("%d",&opci);
+		if(opci==1){
+			goto salto;
+		};
+	
+	 	int ia,tam;
+	 	s[7]=s[ia];
+	    float mat[101][102];
+	    datos(&tam,mat,n, h,f);
+	    esc_data(tam,mat);
+	    solucion(tam,mat,n,h);
+	    for(ia=1;ia<=tam;ia++){
+	        s[ia]=mat[ia][tam+1];
+	    }
+		
+		for(i=0;i<=l ;i++)
+		{
+			a[i]=((s[i+1]-s[i])/(6*h[i]));
+		}
+		
+		for(i=0;i<=l;i++)
+		{
+			b[i]=(s[i]/2);
+		}
+		
+		for(i=0;i<=l;i++)
+		{
+			c[i]=(((y[i+1]-y[i])/h[i])-((s[i+1]+(2*s[i]))/6)*h[i]);
+		}
+		
+		for(i=0;i<=j;i++)
+		{
+			d[i]=y[i];
+		}
+		printf("|     x    |     y    |     h     |    f     |    S      |    a     |    b     |    c     |   d    |\n");
+		for(i=0;i<=j;i++)
+		{
+			s[0]=0;
+			s[j]=0;
+			printf("| %f | %f | %f | %f | %f | %f | %f | %f | %f |\n",x[i],y[i],h[i],f[i],s[i],a[i],b[i],c[i],d[i]);
+		};
+		
+		printf("Coeficientes\n");
+		for(i=0;i<=l;i++)
+		{
+			printf("g%d(x)= (%f*(x-%f)^3)+ (%f*(x-%f)^2) + (%f*(x-%f))+ (%f)   %f <= x <= %f\n",i,a[i],x[i],b[i],x[i],c[i],x[i], d[i],x[i],x[i+1]);
+		}
+		printf("\nDeseas realizar otra interpolacion con otra tabla? S/N\n");
+		scanf("%s",&respuesta);
+	}while(respuesta=='S'|| respuesta=='s');
+	printf("\nDeseas regresar al menu principal? S/N");
+	scanf("%s",&prin);
+	if(prin=='s'   || prin=='S')
+	    menuinterpolacion();
+    else
+        printf("\nAdios\n");
+	
+}
+int menuinterpolacion() //regresa un entero
+{
+	int opcion;
+	printf("\t\tPROGRAMA 2. INTERPOLACION Y AJUSTE DE CURVAS\n");
+	printf("Eliga una opcion:\n1)Interpolacion por Newton\n2)Ajuste de curvas\n3)SALIR\n");
+	scanf("%d",&opcion);
+	if (opcion==3)
+		main();
+	return opcion; //regresa la opcion elegida.
+}
+void interpolacion(float A[], float B[], int C) //recibe los parametros [x,y] y el tamaï¿½o de ambos
+{
+	char r;
+	int o;
+	do
+	{
+		int i,j, polinomio;
+		int fact;
+		float p_inter,h,s,s1,P;
+		printf("Escriba el punto a interpolar: ");
+		scanf("%f",&p_inter);
+		if((p_inter<=A[0]) && (p_inter>=A[C])) //Si el punto a interpolar es menor que el primer dato o mayor que el ï¿½ltimo dato
+		{										//no se podrï¿½ interpolar
+			printf("No se puede interpolar\n");
+		}
+		else 
+		{
+			printf("De que tamanio serï¿½ tu polinomio?	");
+			scanf("%d",&polinomio);
+			float F[C][polinomio]; //Incremento F(Xi)
+			if(polinomio>=C)
+				printf("No se puede crear un polinomio de este tamanio");
+			else
+			{	//Comienza la interpolacion
+				for(i=1;i<=polinomio;i++)
+				{
+					printf("\tF%d\t\t",i);
+				}
+				printf("\n");
+				for(i=0;i<polinomio;i++)
+				{
+					for(j=0;j<C-(i+1);j++)
+					{
+						if(i==0)
+						{	
+							F[j][i]=B[j+1]-B[j]; //DELTA F1
+						}
+						else
+						{
+							F[j][i]=F[j+1][i-1]-F[j][i-1]; //DELTA F2-FN
+						}
+					}
+				}
+				for(i=0;i<polinomio;i++)
+				{
+					for(j=0;j<C-(i+2);j++)
+					{
+						printf("\t%f\t", F[i][j]);
+
+					}
+					printf("\n");
+				}		
+				if((p_inter>A[0]) && (p_inter<A[1])) //Progresivo
+				{
+					printf("\n\t\t\tNewton Progresivo\n");
+					F[C][polinomio]=F[C][polinomio]; //redeclaracion de Incremento
+					h=A[1]-A[0];
+					s=(p_inter-A[0])/h;
+					s1=s;
+					printf("\t\th=%f y s=%f\n",h,s);
+					P=B[0];
+					fact=1;
+					printf("\n\nPOLINOMIO\n");
+					if(polinomio>1)
+					{
+						for(i=1;i<=polinomio;i++)
+						{
+							fact=i*fact;
+							for(j=0;j<1;j++)
+							{		
+							
+								P=P+s1*(F[j][i-1]/fact);
+								s1=s1*(s-i);	
+							}
+						}	
+						printf("\nP%d(%f)=%f",polinomio, p_inter, P);
+					}	
+					else
+						printf("\nP1(%f)=%f",p_inter,P);							
+				}
+				else if((p_inter>A[C-2]) && (p_inter<A[C-1])) //Regresivo
+				{
+					printf("\n\t\t\tNewton Regresivo\n");
+					//Comienza la interpolacion
+						F[C][polinomio]=F[C][polinomio]; //redeclaracion de Incremento
+						h=A[1]-A[0];
+						s=(p_inter-A[C-1])/h;
+						s1=s;
+				printf("\th=%f y s=%f\n",h,s);
+				P=B[C-1];
+				fact=1;
+				printf("\n\n\tPOLINOMIO\n");
+				if(polinomio>1)
+				{
+					for(i=1;i<=polinomio;i++)
+					{
+						fact=i*fact;
+						for(j=(C-i-1);j>(C-i-2);j--)
+						{		
+							P=P+s1*(F[j][i-1]/fact);
+							s1=s1*(s+i);	
+						}
+					}	
+					printf("\nP(%f)=%f", p_inter, P);
+				}
+				else
+					printf("\nP1(%f)=%f",p_inter,P);						
+			}
+		}
+	}
+		printf("\n\nDesea interpolar otro punto con la misma tabla? S/N 	");
+		scanf("%s",&r);
+	}while(r=='S'|| r=='s');
+	printf("\n\nDeseas\n1.Cambiar la tabla\n2.Regresar al submenu de Interpolacion?\n");
+	scanf("%d",&o);
+	switch(o)
+	{
+		case 1: leer_tabla();break;
+		case 2: o=menuinterpolacion();
+			switch(o)
+			{
+				case 1: interpolacion(A, B, C);break;
+				case 2: mainspline();break;
+				case 3: main();break;
+			}
+	}
+}
+		
+
+void leer_tabla()
+{	
+	char resp;
+	int op;
+	int i, puntos;
+	float x[10];
+	float y[10];
+	do
+	{		
+		printf("Cuantos puntos tiene tu tabla?	");
+		scanf("%d",&puntos);
+		puntos=puntos;	
+		x[10]=x[puntos];
+		y[10]=y[puntos];
+		printf("Escribe los datos de tu tabla:\n");
+		for(i=0;i<puntos;i++)
+		{
+			printf("X%d: ",i);
+			scanf("%f",&x[i]);
+			printf("Y%d: ",i);
+			scanf("%f", &y[i]);
+		}		
+	
+		printf("Asi queda la tabla:\n");
+		printf("\tXi\t\tYi\n");
+		for(i=0;i<puntos;i++)
+		{
+			printf("\t%f\t%f\n",x[i],y[i]);
+		}
+		printf("Los datos de la tabla son correctos? S/N ");
+		scanf("%s",&resp);
+	}while(resp=='N'||resp=='n');
+	 interpolacion(x, y, puntos);
+			
+	
+}
+void maininterpolacion()
+{
+	int op_menu;
+	op_menu=menuinterpolacion(); //menu de seleccion entre Interpolacion por Newton y Ajuste de curvas
+	switch(op_menu)
+	{
+		case 1: leer_tabla();break;
+		case 2: mainspline();break;
+		case 3: main();break;
+	}
+	
+}
