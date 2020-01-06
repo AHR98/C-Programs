@@ -1,0 +1,249 @@
+void primera_derivada(float A[], float B[], int tam, float h1);
+void segunda_derivada(float A[], float B[], int tam, float h1);
+void Integracion(int tama, float hn, float I[], float A[]);
+void menuprograma3();
+float tabla();
+void menu_metodo(float A[], float B[], int tam, float h1);
+
+void menu_metodo(float A[], float B[], int tam, float h1)
+{
+	int opcion;
+	printf("Seleccione la opción que desea: \n");
+	printf("1. Primera Derivada\n");
+	printf("2. Segunda Derivada\n");
+	printf("3. Integracion \n");
+	scanf("%d",&opcion);
+	switch(opcion)
+	{
+		case 1: primera_derivada(A, B,tam,h1);
+			 break;
+		case 2: segunda_derivada(A, B,tam,h1);
+			break;
+ 		case 3: Integracion(tam,h1,B,A);
+		 	 break;	  	 
+	}
+}
+
+void segunda_derivada(float A[], float B[], int tam, float h1)
+{
+	printf("\t\tDiferencias: Segunda derivada\n");
+	char r;
+	int n=tam,i=0;
+	float  in1=0.0,in2=0.0, h=h1;
+	int aux, aux2;
+	float fderivada2[n]; 
+	do
+	{
+		aux=-1; //iniciamos los valores siempre que no esten los intervalos en la tabla.
+		aux2=-1;
+		printf("Escribe intervalo de valores para los que se desea conocer la derivada: ");
+		do
+		{
+			scanf("%f",&in1);
+			scanf("%f",&in2);
+			if(in1>in2) //Comprobamos que el intervalo [a,b] a<b
+			{
+				printf("\n*Por favor escriba un intervalo [a,b] donde a<b .\n");
+			}
+		}while(in1>in2); //Sino vuelve a pedir los intervalos
+		//Guardamos la posición donde están los intervalos si es que estan
+		for(i=0;i<n;i++)
+		{
+			if(in1==A[i])
+			{
+				aux=i;
+			}
+		 	if(in2<=A[i])
+			{
+				aux2=i;
+			}
+		}
+		if(aux==-1 || aux2 ==-1) //Sino estan los intervalos se volverá a pedir los intervalos
+		printf("Los intervalos no estan dentro de la tabla, por favor, escribe un intervalo correcto.\n");
+	}while((aux==-1) || (aux2==-1));
+//////////////////////////////////////////////////////////////////////////////////////7
+		for(i=aux+1;i<aux2;i++)
+		{
+			fderivada2[i]=((B[i+1]-2*(B[i])+B[i-1])/(h*h));
+		}
+		//IMPRESIÓN DE DATOS
+		printf("i||  x[i]  ||  f''[xi]  ||\n");
+		for(i=aux;i<aux2+1;i++)
+		{
+			printf("%d||%f||%f||%f||\n",i,A[i], B[i], fderivada2[i]);
+		}
+	printf("Desea realizar otro proceso con la misma tabla? S/N");
+	scanf("%s",&r);
+	if(r=='S' || r=='s')
+	{
+		 menu_metodo(A, B, tam, h1);
+	}
+	else
+		printf("Adios.\n");
+}
+
+float tabla()
+{
+	int n=0,i=0;
+	float h=0.0;
+	float x[50], fx[50];
+	char r;
+	do
+	{
+		printf("Cuantos datos tiene tu tabla?	");
+		scanf("%d",&n);
+		x[50]=x[n];
+		fx[50]=fx[n];
+		printf("\nCual es tu h (espacio entre invervalos)?	");
+		scanf("%f",&h);
+		printf("\nCual es tu primer dato?	");
+		scanf("%f", &x[0]);
+		for(i=1;i<n;i++)
+		{
+			x[i]=x[i-1]+h; //guardamos los datos en x
+		}
+		printf("Por favor, escribe los datos de f(xi)\n"); //leer f(x)
+		for(i=0;i<n;i++)
+		{
+			printf("f[x%d]=",i);
+			scanf("%f",&fx[i]);
+		}
+		printf("i||x[i]||f[xi]||\n");
+		//IMPRESIÓN DE DATOS
+		for(i=0;i<n;i++)
+		{
+			printf("%d||%f||%f||\n",i,x[i], fx[i]);
+		}
+		printf("Desea cambiar los datos? S/N	");
+		scanf("%s", &r);
+	}while(r=='S'||r=='s');
+	menu_metodo(x, fx, n, h);
+}
+
+
+
+
+void menuprograma3() //regresa un entero
+{
+	int opcion;
+	printf("\t\tPROGRAMA 3. DIFERENCIACION E INTEGRACION\n");
+}
+void Integracion(int tama, float hn, float I[], float A[])
+{
+	char r;
+	int n=tama,a,b=0,z=n-2,w=0,p=n-1;
+	float h=hn,sumtotal=0,sumtotal4=0,sumtotal2x=0,sumtotal2=0,sumprim=0,suma4=0,suma2=0,res=0,res1=0,resultadofinal=0,sumaux=0,suma=0;
+	if(p % 2 == 0){
+		sumprim = I[0]+I[n-1];
+	for(a=1;a<=z;a=a+2){
+		suma4=(4*I[a]);
+		sumtotal4=sumtotal4+suma4;
+		suma2=(2*I[a+1]);
+		sumtotal2=sumtotal2+suma2;
+	}
+	sumaux=(2*I[n-1]);
+	sumtotal2x=sumtotal2-sumaux;
+	sumtotal=sumtotal2x+sumtotal4;
+	res1=(h/3)*(sumprim + sumtotal);
+	printf("Su resultado es: %f\n",res1);
+	}
+	else{
+	float sumtotalb=0,sumprimb=0,sumab=0,res3=0;
+	b=n-3;
+	w=b-2;
+	sumprimb=I[b-1]+I[n-1];
+	sumtotalb=(3*I[b+1])+(3*I[b]);
+	res3=(3*h/8)*(sumprimb+sumtotalb);
+	/////comienza 1/3
+	sumprim = I[0]+I[b-1];
+	for(a=1;a<=w;a=a+2){
+		suma4=(4*I[a]);
+		sumtotal4=sumtotal4+suma4;
+		suma2=(2*I[a+1]);
+		sumtotal2=sumtotal2+suma2;
+	}
+	sumaux=(2*I[b-1]);
+	sumtotal2x=sumtotal2-sumaux;
+	sumtotal=sumtotal2x+sumtotal4;
+	res1=(h/3)*(sumprim + sumtotal);	
+	resultadofinal=res1+res3;
+	printf("Se uso Simpson 1/3 y Simpson 3/8\n");
+	printf("%f + %f\n",res1,res3);
+	printf("Su resultado es: \%f\n",resultadofinal); 
+	}
+	printf("Desea realizar otro proceso? S/N\n");
+	scanf("%s",&r);
+	if(r=='S' || r=='s')
+	{
+		menu_metodo(A, I, tama, hn);
+	}
+	else{
+		printf("Adios.\n");
+	}
+
+}
+	
+void primera_derivada(float A[], float B[], int tam, float h1)
+{
+	printf("\t\tDiferencias: primera derivada\n");
+	char r;
+	int n=tam,i=0;
+	float  in1=0.0,in2=0.0, h=h1;
+	int aux, aux2;
+	float fderivada1[n]; //f'(xi+1)=(1/2h)*(fi+2-fi)
+	do
+	{
+		aux=-1; //iniciamos los valores siempre que no esten los intervalos en la tabla.
+		aux2=-1;
+		printf("Escribe intervalo de valores para los que se desea conocer la derivada: ");
+		do
+		{
+			scanf("%f",&in1);
+			scanf("%f",&in2);
+			if(in1>in2) //Comprobamos que el intervalo [a,b] a<b
+			{
+				printf("\n*Por favor escriba un intervalo [a,b] donde a<b .\n");
+			}
+		}while(in1>in2); //Sino vuelve a pedir los intervalos
+		//Guardamos la posición donde están los intervalos si es que estan
+		for(i=0;i<n;i++)
+		{
+			if(in1==A[i])
+			{
+				aux=i;
+			}
+		 	if(in2<=A[i])
+			{
+				aux2=i;
+			}
+		}
+		if(aux==-1 || aux2 ==-1) //Sino estan los intervalos se volverá a pedir los intervalos
+		printf("Los intervalos no estan dentro de la tabla, por favor, escribe un intervalo correcto.\n");
+	}while((aux==-1) || (aux2==-1));
+//////////////////////////////////////////////////////////////////////////////////////7
+	printf("\nIntervalos encontrados.\n");
+		for(i=aux+1;i<aux2;i++)
+		{
+			fderivada1[i]=(1/(2*h))*(B[i+1]-B[i-1]);
+		}
+		//IMPRESIÓN DE DATOS
+		printf("i||  x[i]  ||  f[xi]  ||  f'[xi]  ||\n");
+		for(i=aux;i<aux2+1;i++)
+		{
+			printf("%d||%f||%f||%f||\n",i,A[i], B[i], fderivada1[i]);
+		}
+	printf("Desea realizar otro proceso? S/N");
+	scanf("%s",&r);
+	if(r=='S' || r=='s')
+	{
+		menu_metodo(A, B, tam, h1);
+	}
+	else
+		printf("Adios.\n");
+}
+int mainprograma3()
+{
+	menuprograma3();
+	tabla(); //Tabla para guardar los datos de derivadas e integrales
+	return 0;
+}
