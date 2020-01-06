@@ -1,0 +1,29 @@
+//INCLUYENDO PROGRAMAS PASADOS
+#include "Programa1.h"
+#include "Programa2.h"
+#include "Programa3.h"
+
+void main()
+{
+	int r;
+	printf("\t\tPAQUETE FINAL\n");
+	printf("1. Sistemas de ecuaciones no lineales. \n");
+	printf("2.  Interpolacion y ajuste de curvas.\n"); 
+	printf("\t2.1 Leer la tabla.\n");
+	printf("\t2.2 Interpolacion por Newton progresivo y regresivo.\n");
+	printf("\t2.3 Ajuste por spline cubico.\n");
+	printf("3.Diferenciacion e integracion (datos igualmente espaciados).\n");
+	printf("\t3.1 Leer tabla.\n");
+	printf("\t3.2 Diferenciacion centrada.\n");
+	printf("\t3.3 Integracion.\n");
+	printf("\n\nIMPORTANTE: Elige solo 1, 2 o 3\n");
+	scanf("%d", &r);
+	switch(r)
+	{
+		case 1: sistemaecuaciones();break;
+		case 2:	maininterpolacion();break;
+		case 3: mainprograma3();break;
+	}
+	printf("\n\nEQUIPO:\n\tArturo Martinez Espinosa\n\tAlejandra Huerta Rangel\n\tCaleb Elihud Abdelrrague Manzanares\n\n\n");
+
+}
