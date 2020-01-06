@@ -1,0 +1,889 @@
+
+sistemaecuaciones()
+{
+
+
+ 	float xinicial=0.0;//x que pides
+    float yinicial=0.0;//y que pides
+    float zinicial=0.0;//z que pides
+    int iteraciones=0;//numero de iteraciones que pides
+    float tolerancia=0.0;//tolerancia que pides
+    int contadoriteraciones=0;//contador de iteraciones hechas
+
+    int contit=0;//CONTINUAR ITERANDO variable decision
+    int contmet=0; //CONTINUAR METODO variable decision
+
+
+
+    float fx1[2];//f evaluada en los puntos dos variables
+    float jacobiana[3][3];//jacobiana evaluada en los puntos dps var
+    float jacobianainversa[3][3];//jacobiana inversa 2 var
+    float jacobianatrans[3][3];
+    float det2=0.0;//determinante 2 var
+    float matproducto[3];//producto de fx y j inversa
+    float xnueva=0.0;//nueva x para iterar
+    float ynueva=0.0;//nueva y para iterar
+    float znueva=0.0; //nueva z para iterar
+   float  diferencia[3];//ir sacando diferencia en dos var
+   float norma=0.0;
+ 
+ 	int funcelegir=0;
+ 	printf("\n  ELEGIR FUNCION");
+    printf("\n 1. f1= x^2+xy-10=0        f2=y+3xy^2-57=0");
+    printf("\n 2. f1= x^2+y^2-9=0        f2=-e^x-2y-3=0");
+    printf("\n 3. f1= 2x^2-4x+y^2+3z+6z+2    f2=x^2+y^2-2y+2z^2-5=0    f3=3x^2-12x+y^2-3z^2+8=0");
+    printf("\n 4. f1= x^-4x+y^2=0        f2=x^2 -x-12y+1=0         f3=3x^2-12x+y^2-3z^2+8=0\n ");
+
+    scanf("%d",&funcelegir);//guarda numero de funcion
+    switch(funcelegir)
+	{
+
+    case 1:
+		
+        contadoriteraciones=0;//hacer el contador o para comenzar
+        //pides datos
+        printf("\n PRIMER CASO");
+        printf("\n INGRESE VALORES INICIALES:");
+        printf("\n PARA X:");
+        scanf("%f",&xinicial);
+        printf("\n PARA Y:");
+        scanf("%f",&yinicial);
+        printf("\n NUMERO DE IETRACIONES:");
+        scanf("%d",&iteraciones);
+        printf("\n TOLERANCIA:");
+        scanf("%f",&tolerancia);
+        //mientras las iteraciones sean menores a las que te dieron hacer el proceso
+
+         do{
+         //F(X)
+          fx1[0] =(xinicial*xinicial)+(xinicial*yinicial)-10;
+          fx1[1]=(yinicial)+(3*xinicial*yinicial*yinicial)-50; //tenías -57
+         printf("\n F(X): x: %f y: %f ",fx1[0],fx1[1]);
+         //JACOBIANA
+         jacobiana[1][1]=2*xinicial+yinicial;
+         jacobiana[1][2]=xinicial;
+         jacobiana[2][1]=3*(yinicial*yinicial);
+         jacobiana[2][2]=1+6*xinicial*yinicial;
+          printf("\n jacobiana: ");
+          printf("\n %f   %f",jacobiana[1][1],jacobiana[1][2] );
+          printf("\n %f   %f",jacobiana[2][1],jacobiana[2][2] );
+
+         //DETERMINANTE
+         det2=(jacobiana[1][1]*jacobiana[2][2])-(jacobiana[1][2]*jacobiana[2][1]); //corregido
+         printf("\n DETERMINANTE: %f ", det2 );
+         
+
+         //INVERSA JACOBIANA
+			//corregido
+         jacobianainversa[1][1]=(1/det2)*jacobiana[2][2];
+         jacobianainversa[1][2]=(1/det2)*(-jacobiana[1][2]);
+         jacobianainversa[2][1]=(1/det2)*(-jacobiana[2][1]);
+         jacobianainversa[2][2]=(1/det2)*jacobiana[1][1];
+
+         printf("\n jacobiana inversa: ");
+          printf("\n %f   %f",jacobianainversa[1][1],jacobianainversa[1][2] );
+          printf("\n %f   %f",jacobianainversa[2][1],jacobianainversa[2][2] );
+//MULTIPICACION  JACOBIANA Y F(X)
+       matproducto[0]= (jacobianainversa[1][1]*fx1[0])+(jacobianainversa[1][2]*fx1[1]);
+       matproducto[1]= (jacobianainversa[2][1]*fx1[0])+(jacobianainversa[2][2]*fx1[1]);
+
+        printf("\n PRODUCTO DE JACOBIANA^-1 Y F(X): ");
+          printf("\n %f ",matproducto[0]);
+          printf("\n %f ",matproducto[1]);
+//SUSTITUYENDO EN LA FORMULA
+
+      xnueva=xinicial-matproducto[0];
+      ynueva=yinicial-matproducto[1];
+
+        printf("\n RESULTADO DE LA IETRACION: ");
+          printf("\n x:%f ",xnueva);
+          printf("\n y: %f ",ynueva);
+//diferencia
+       diferencia[0]= xnueva-xinicial;
+       diferencia[1]= ynueva-yinicial;
+       printf("\n diferencia: ");
+          printf("\n %f ",diferencia[0]);
+          printf("\n %f ",diferencia[1]);
+//norma
+
+        if(fabs (diferencia[0]) > fabs (diferencia[1]))
+        { norma=fabs (diferencia[0]);
+          printf("\n norma: %f ",norma);}
+          if(fabs (diferencia[1]) > fabs (diferencia[0]))
+        { norma=fabs (diferencia[1]);
+          printf("\n norma: %f ",norma);}
+
+     printf("\n  \n  \n  \n  \n  ");
+//en caso de alcanzar tolerancia
+ if(norma<=tolerancia)
+ {
+        printf("\n TOLERANCIA ALCANZADA: %f ",norma);
+        printf("\n DESEA CONTINUAR LAS ITERACIONES?:1. SI 2. NO  ");
+        scanf("%d",&contit);
+
+
+ }
+ //desicion si se alcanza la tolerancia
+ switch(contit)
+        {
+            case 1: continue;
+            break;
+            case 2:     printf("\n DESEA CONTINUAR EN EL PROGRAMA?:1. SI 2. NO  ");
+        scanf("%d",&contmet);
+        if (contmet==1){sistemaecuaciones();}
+        else {
+            //acomodas variables para la siguiente iteracion
+contadoriteraciones++;
+ xinicial=xnueva;
+ yinicial=ynueva;
+ funcelegir=0;break;}
+
+            break;
+        }
+//acomodas variables para la siguiente iteracion
+contadoriteraciones++;
+ xinicial=xnueva;
+ yinicial=ynueva;
+ funcelegir=0;
+
+
+         }while(contadoriteraciones<=iteraciones);
+
+//INICIAS LAS VARIABLES PARA PODER OPERAR DE NUEVO
+contadoriteraciones=0;
+ xinicial=0;
+ yinicial=0;
+ funcelegir=0;
+ //PREGUNTAS SI SE CONTINUARA EN EL METODO
+
+  printf("\n DESEA CONTINUAR EN EL PROGRAMA?:1. SI 2. NO  ");
+        scanf("%d",&contmet);
+        if (contmet==1){ main();}
+        else {main();}
+
+	break;
+        
+
+    case 2:
+	{
+        //PIDES DATOS
+            printf("\n SEGUNDO  CASO");
+        printf("\n INGRESE VALORES INICIALES:");
+        printf("\n PARA X:");
+        scanf("%f",&xinicial);
+        printf("\n PARA Y:");
+        scanf("%f",&yinicial); //Estaba en %d
+        printf("\n NUMERO DE IETRACIONES:");
+        scanf("%d",&iteraciones);
+        printf("\n TOLERANCIA:");
+        scanf("%f",&tolerancia); //estaban en %d
+         //mientras las iteraciones sean menores a las que te dieron hacer el proceso
+
+         do{
+         //F(X)
+          fx1[0] =(xinicial*xinicial)+(yinicial*yinicial)-9;
+          fx1[1]=-exp(xinicial)-2*yinicial-3;
+         printf("\n F(X): x: %f y: %f ",fx1[0],fx1[1]);
+         //JACOBIANA
+         jacobiana[1][1]=2*xinicial;
+         jacobiana[1][2]=2*yinicial;//los tenias invertidos
+         jacobiana[2][1]=-exp(xinicial);//con este
+         jacobiana[2][2]=-2;
+          printf("\n jacobiana: ");
+          printf("\n %f   %f",jacobiana[1][1],jacobiana[1][2] );
+          printf("\n %f   %f",jacobiana[2][1],jacobiana[2][2] );
+
+//DETERMINANTE
+         det2=(jacobiana[1][1]*jacobiana[2][2])-(jacobiana[1][2]*jacobiana[2][1]); //corregido
+         printf("\n DETERMINANTE: %f ", det2 );
+         
+         //INVERSA JACOBIANA
+			//corregido
+         jacobianainversa[1][1]=(1/det2)*jacobiana[2][2];
+         jacobianainversa[1][2]=(1/det2)*(-jacobiana[1][2]);
+         jacobianainversa[2][1]=(1/det2)*(-jacobiana[2][1]);
+         jacobianainversa[2][2]=(1/det2)*jacobiana[1][1];
+
+         printf("\n jacobiana inversa: ");
+          printf("\n %f   %f",jacobianainversa[1][1],jacobianainversa[1][2] );
+          printf("\n %f   %f",jacobianainversa[2][1],jacobianainversa[2][2] );
+         
+//MULTIPICACION  JACOBIANA Y F(X)
+		matproducto[0]= (jacobianainversa[1][1]*fx1[0])+(jacobianainversa[1][2]*fx1[1]);
+    	matproducto[1]= (jacobianainversa[2][1]*fx1[0])+(jacobianainversa[2][2]*fx1[1]);
+    	
+        printf("\n PRODUCTO DE JACOBIANA^-1 Y F(X): ");
+          printf("\n %f ",matproducto[0]);
+          printf("\n %f ",matproducto[1]);
+          
+//SUSTITUYENDO EN LA FORMULA
+
+      xnueva=xinicial-matproducto[0];
+      ynueva=yinicial-matproducto[1];
+
+        printf("\n RESULTADO DE LA IETRACION: ");
+          printf("\n %f ",xnueva);
+          printf("\n %f ",ynueva);
+//diferencia
+       diferencia[0]= xnueva-xinicial;
+       diferencia[1]= ynueva-yinicial;
+       printf("\n diferencia: ");
+          printf("\n %f ",diferencia[0]);
+          printf("\n %f ",diferencia[1]);
+//norma
+
+        if(fabs (diferencia[0]) > fabs (diferencia[1]))
+        { norma=fabs (diferencia[0]);
+          printf("\n norma: %f ",norma);}
+          if(fabs (diferencia[1]) > fabs (diferencia[0]))
+        { norma=fabs (diferencia[1]);
+          printf("\n norma: %f ",norma);}
+
+//en caso de alcanzar tolerancia
+ if(norma<=tolerancia)
+ {
+        printf("\n TOLERANCIA ALCANZADA: %f ",norma);
+        printf("\n DESEA CONTINUAR LAS ITERACIONES?:1. SI 2. NO  ");
+        scanf("%d",&contit);
+
+
+ }
+ //desicion si se alcanza la tolerancia
+ switch(contit)
+        {
+            case 1: continue;
+            break;
+            case 2:     printf("\n DESEA CONTINUAR EN EL PROGRAMA?:1. SI 2. NO  ");
+        scanf("%d",&contmet);
+        if (contmet==1){sistemaecuaciones();}
+        else {
+            //acomodas variables para la siguiente iteracion
+contadoriteraciones++;
+ xinicial=xnueva;
+ yinicial=ynueva;
+ funcelegir=0;break;}
+
+            break;
+        }
+//acomodas variables para la siguiente iteracion
+contadoriteraciones++;
+ xinicial=xnueva;
+ yinicial=ynueva;
+ funcelegir=0;
+
+
+         }while(contadoriteraciones<=iteraciones);
+
+//INICIAS LAS VARIABLES PARA PODER OPERAR DE NUEVO
+contadoriteraciones=0;
+ xinicial=0;
+ yinicial=0;
+ funcelegir=0;
+ //PREGUNTAS SI SE CONTINUARA EN EL METODO
+
+  printf("\n DESEA CONTINUAR EN EL PROGRAMA?:1. SI 2. NO  ");
+        scanf("%d",&contmet);
+        if (contmet==1){ main();}
+        else {main();}
+
+	break;
+}	   
+    case 3:
+    	contadoriteraciones=0;//hacer el contador o para comenzar    
+		printf("\n TERCER  CASO");
+        printf("\n INGRESE VALORES INICIALES:");
+        printf("\n PARA X:");
+        scanf("%f",&xinicial);
+        printf("\n PARA Y:");
+        scanf("%f",&yinicial);
+        printf("\n PARA Z:");
+        scanf("%f",&zinicial);
+        printf("\n NUMERO DE IETRACIONES:");
+        scanf("%d",&iteraciones);
+        printf("\n TOLERANCIA:");
+        scanf("%f",&tolerancia);
+        //mientras las iteraciones sean menores a las que te dieron hacer el proceso
+
+         do{
+         //F(X)
+          fx1[0] =2*((xinicial*xinicial))-4*(xinicial)+ (yinicial*yinicial)+3*(zinicial*zinicial)+6*zinicial+2;
+          fx1[1]=(xinicial*xinicial)+(yinicial*yinicial)-2*yinicial+2*(zinicial*zinicial)-5;
+          fx1[2]=(3*pow(xinicial, 2)-(12*xinicial)+(pow(yinicial,2))-(3*pow(zinicial,2))+8); //Estaba mal la ecuacion
+         printf("\n F(X): x: %f y: %f z= %f",fx1[0],fx1[1],fx1[2]); //faltaba z
+         //JACOBIANA
+         jacobiana[1][1]=4*xinicial-4;
+         jacobiana[1][2]=2*yinicial;
+         jacobiana[1][3]=6*zinicial+6; //tenias solo 9
+         jacobiana[2][1]=2*xinicial; //tenias un -1
+         jacobiana[2][2]=2*yinicial-2; //tenias -12
+         jacobiana[2][3]=4*zinicial;//tenias 0
+         jacobiana[3][1]=6*xinicial-12;
+         jacobiana[3][2]=2*yinicial;
+         jacobiana[3][3]=-6*zinicial; 
+
+          printf("\n jacobiana: ");
+          printf("\n %f   %f %f",jacobiana[1][1],jacobiana[1][2], jacobiana[1][3] );
+          printf("\n %f   %f %f ",jacobiana[2][1],jacobiana[2][2], jacobiana[2][3] );
+          printf("\n %f   %f %f",jacobiana[3][1],jacobiana[3][2], jacobiana[3][3] );
+
+
+         //DETERMINANTE
+         det2=(jacobiana[1][1]*jacobiana[2][2] *jacobiana[3][3])+
+              (jacobiana[1][2]*jacobiana[2][3] *jacobiana[3][1])+
+              (jacobiana[1][3]*jacobiana[2][1] *jacobiana[3][2])-
+              (jacobiana[1][3]*jacobiana[2][2] *jacobiana[3][1])-
+              (jacobiana[1][2]*jacobiana[2][1] *jacobiana[3][3])-
+              (jacobiana[1][1]*jacobiana[2][3] *jacobiana[3][2]);
+         printf("\n DETERMINANTE: %f ", det2 );
+
+// jacobiana transuesta
+              jacobianatrans[1][1]=jacobiana[1][1]; jacobianatrans[1][2]=jacobiana[2][1];  jacobianatrans[1][3]=jacobiana[3][1];
+              jacobianatrans[2][1]=jacobiana[1][2]; jacobianatrans[2][2]=jacobiana[2][2];  jacobianatrans[2][3]=jacobiana[3][2];
+              jacobianatrans[3][1]=jacobiana[1][3]; jacobianatrans[3][2]=jacobiana[2][3];  jacobianatrans[3][3]=jacobiana[3][3];
+            printf("\n JACOBIANA TRANSPUESTA: %f  %f   %f \n    %f  %f   %f \n       %f  %f   %f \n ",
+                   jacobianatrans[1][1], jacobianatrans[1][2], jacobianatrans[1][3],
+                   jacobianatrans[2][1], jacobianatrans[2][2], jacobianatrans[2][3],
+                   jacobianatrans[3][1], jacobianatrans[3][2], jacobianatrans[3][3] );
+
+//jacobiana inversa con matriz adjunta
+
+      jacobianainversa[1][1]=(jacobianatrans[2][2]*jacobianatrans[3][3]-jacobianatrans[2][3]*jacobianatrans[3][2])/det2;
+      jacobianainversa[1][2]=-(jacobianatrans[2][1]*jacobianatrans[3][3]-jacobianatrans[2][3]*jacobianatrans[3][1])/det2;
+      jacobianainversa[1][3]=(jacobianatrans[2][1]*jacobianatrans[3][2]-jacobianatrans[3][1]*jacobianatrans[2][2])/det2;
+
+      jacobianainversa[2][1]=-(jacobianatrans[1][2]*jacobianatrans[3][3]-jacobianatrans[3][2]*jacobianatrans[1][3])/det2;
+      jacobianainversa[2][2]=(jacobianatrans[1][1]*jacobianatrans[3][3]-jacobianatrans[3][1]*jacobianatrans[1][3])/det2;
+      jacobianainversa[2][3]=-(jacobianatrans[1][1]*jacobianatrans[3][2]-jacobianatrans[3][1]*jacobianatrans[1][2])/det2;
+
+      jacobianainversa[3][1]=(jacobianatrans[1][2]*jacobianatrans[2][3]-jacobianatrans[2][2]*jacobianatrans[1][3])/det2;
+      jacobianainversa[3][2]=-(jacobianatrans[1][1]*jacobianatrans[2][3]-jacobianatrans[2][1]*jacobianatrans[1][3])/det2;
+      jacobianainversa[3][3]=(jacobianatrans[1][1]*jacobianatrans[2][2]-jacobianatrans[2][1]*jacobianatrans[1][2])/det2;
+
+
+printf("\n inversa:");
+printf("\n %f %f %f ",jacobianainversa[1][1],jacobianainversa[1][2],jacobianainversa[1][3]);
+printf("\n %f %f %f ",jacobianainversa[2][1],jacobianainversa[2][2],jacobianainversa[2][3]);
+printf("\n %f %f %f ",jacobianainversa[3][1],jacobianainversa[3][2],jacobianainversa[3][3]);
+
+
+
+//MULTIPICACION  JACOBIANA Y F(X) 
+ 		fx1[0] =2*((xinicial*xinicial))-4*(xinicial)+ (yinicial*yinicial)+3*(zinicial*zinicial)+6*zinicial+2;
+        fx1[1]=(xinicial*xinicial)+(yinicial*yinicial)-2*yinicial+2*(zinicial*zinicial)-5;
+        fx1[2]=(3*pow(xinicial, 2)-(12*xinicial)+(pow(yinicial,2))+(3*pow(zinicial,2))+8);
+		//por alguna razón el programa va cambiando los valores de fx1 
+       matproducto[0]=(jacobianainversa[1][1]*fx1[0])+(jacobianainversa[1][2]*fx1[1])+(jacobianainversa[1][3]*fx1[2]);
+       matproducto[1]=jacobianainversa[2][1]*fx1[0]+jacobianainversa[2][2]*fx1[1]+jacobianainversa[2][3]*fx1[2] ;
+       matproducto[2]=jacobianainversa[3][1]*fx1[0]+jacobianainversa[3][2]*fx1[1]+jacobianainversa[3][3]*fx1[2] ;
+
+        printf("\n PRODUCTO DE JACOBIANA^-1 Y F(X): ");
+          printf("\n %f ",matproducto[0]);
+          printf("\n %f ",matproducto[1]);
+          printf("\n %f ",matproducto[2]);
+//SUSTITUYENDO EN LA FORMULA
+
+      xnueva=xinicial-matproducto[0];
+      ynueva=yinicial-matproducto[1];
+      znueva=zinicial-matproducto[2];
+
+        printf("\n RESULTADO DE LA IETRACION: ");
+          printf("\n %f ",xnueva);
+          printf("\n %f ",ynueva);
+          printf("\n %f ",znueva);
+//diferencia
+       diferencia[0]= xnueva-xinicial;
+       diferencia[1]=ynueva-yinicial;
+       diferencia[2]=znueva-zinicial; //estaban como zinicial-znueva y debe ser alreves.
+       printf("\n diferencia: ");
+          printf("\n %f ",diferencia[0]);
+          printf("\n %f ",diferencia[1]);
+          printf("\n %f ",diferencia[2]);
+//norma
+
+        if(fabs (diferencia[0]) > fabs (diferencia[1]) && fabs (diferencia[0]) > fabs (diferencia[2])   )
+        { norma=fabs (diferencia[0]);
+          printf("\n norma: %f ",norma);}
+
+        if(fabs (diferencia[1]) > fabs (diferencia[0])  && fabs (diferencia[1]) > fabs (diferencia[2])   )
+        { norma=fabs (diferencia[1]);
+          printf("\n norma: %f ",norma);}
+
+        if(fabs (diferencia[2]) >    fabs (diferencia[1])  && fabs (diferencia[2]) > fabs (diferencia[0])  )
+        { norma=fabs (diferencia[2]);
+          printf("\n norma: %f ",norma);}
+
+//en caso de alcanzar tolerancia
+ if(norma<=tolerancia)
+ {
+        printf("\n TOLERANCIA ALCANZADA: %f ",norma);
+        printf("\n DESEA CONTINUAR LAS ITERACIONES?:1. SI 2. NO  ");
+        scanf("%d",&contit);
+ }
+ //desicion si se alcanza la tolerancia
+ switch(contit)
+        {
+            case 1: continue;
+            break;
+            case 2:     
+					printf("\n DESEA CONTINUAR EN EL PROGRAMA?:1. SI 2. NO  ");
+		        scanf("%d",&contmet);
+		        if (contmet==1){
+		xinicial=0;
+		yinicial=0;
+		zinicial=0;
+		iteraciones=0;
+		tolerancia=0;
+		contadoriteraciones=0;
+		contit=0;
+		contmet=0;
+		fx1[0]=0;
+		fx1[1]=0;
+		fx1[2]=0;
+		fx1[3]=0;
+		jacobiana[1][1]=0; jacobiana[1][2]=0; jacobiana[1][3]=0;
+		jacobiana[2][1]=0; jacobiana[2][2]=0; jacobiana[2][3]=0;
+		jacobiana[3][1]=0; jacobiana[3][2]=0; jacobiana[3][3]=0;
+		
+		jacobianainversa[1][1]=0; jacobianainversa[1][2]=0; jacobianainversa[1][3]=0;
+		jacobianainversa[2][1]=0; jacobianainversa[2][2]=0; jacobiana[2][3]=0;
+		jacobianainversa[3][1]=0; jacobianainversa[3][2]=0; jacobiana[3][3]=0;
+		
+		
+		jacobianatrans[1][1]=0; jacobianatrans[1][2]=0; jacobianatrans[1][3]=0;
+		jacobianatrans[2][1]=0; jacobianatrans[2][2]=0; jacobianatrans[2][3]=0;
+		jacobianatrans[3][1]=0; jacobianatrans[3][2]=0; jacobianatrans[3][3]=0;
+		
+		
+		
+		det2=0;
+		
+		matproducto[3]=0;
+		matproducto[2]=0;
+		matproducto[1]=0;
+		matproducto[0]=0;
+		
+		xnueva=0;
+		ynueva=0;
+		diferencia[3]=0;
+		diferencia[2]=0;
+		diferencia[1]=0;
+		diferencia[0]=0;
+		norma=0;
+		sistemaecuaciones();}
+        else {
+            //acomodas variables para la siguiente iteracion
+		contadoriteraciones++;
+		 xinicial=xnueva;
+		 yinicial=ynueva;
+		 funcelegir=0;}
+
+            break;
+        }
+		//acomodas variables para la siguiente iteracion
+		contadoriteraciones++;
+		 xinicial=xnueva;
+		 yinicial=ynueva;
+		 zinicial=znueva;
+		 funcelegir=0;
+
+         }while(contadoriteraciones<iteraciones);
+
+//INICIAS LAS VARIABLES PARA PODER OPERAR DE NUEVO
+contadoriteraciones=0;
+ xinicial=0;
+ yinicial=0;
+ funcelegir=0;
+ //PREGUNTAS SI SE CONTINUARA EN EL METODO
+
+  printf("\n DESEA CONTINUAR EN EL PROGRAMA?:1. SI 2. NO  ");
+        scanf("%d",&contmet);
+        if (contmet==1){sistemaecuaciones();}
+        else {
+xinicial=0;
+yinicial=0;
+zinicial=0;
+iteraciones=0;
+tolerancia=0;
+contadoriteraciones=0;
+contit=0;
+contmet=0;
+fx1[0]=0;
+fx1[1]=0;
+fx1[2]=0;
+fx1[3]=0;
+jacobiana[1][1]=0; jacobiana[1][2]=0; jacobiana[1][3]=0;
+jacobiana[2][1]=0; jacobiana[2][2]=0; jacobiana[2][3]=0;
+jacobiana[3][1]=0; jacobiana[3][2]=0; jacobiana[3][3]=0;
+
+jacobianainversa[1][1]=0; jacobianainversa[1][2]=0; jacobianainversa[1][3]=0;
+jacobianainversa[2][1]=0; jacobianainversa[2][2]=0; jacobiana[2][3]=0;
+jacobianainversa[3][1]=0; jacobianainversa[3][2]=0; jacobiana[3][3]=0;
+
+
+jacobianatrans[1][1]=0; jacobianatrans[1][2]=0; jacobianatrans[1][3]=0;
+jacobianatrans[2][1]=0; jacobianatrans[2][2]=0; jacobianatrans[2][3]=0;
+jacobianatrans[3][1]=0; jacobianatrans[3][2]=0; jacobianatrans[3][3]=0;
+
+
+
+det2=0;
+
+matproducto[3]=0;
+matproducto[2]=0;
+matproducto[1]=0;
+matproducto[0]=0;
+
+xnueva=0;
+ynueva=0;
+diferencia[3]=0;
+diferencia[2]=0;
+diferencia[1]=0;
+diferencia[0]=0;
+norma=0;
+                main();}
+               xinicial=0;
+yinicial=0;
+zinicial=0;
+iteraciones=0;
+tolerancia=0;
+contadoriteraciones=0;
+contit=0;
+contmet=0;
+fx1[0]=0;
+fx1[1]=0;
+fx1[2]=0;
+fx1[3]=0;
+jacobiana[1][1]=0; jacobiana[1][2]=0; jacobiana[1][3]=0;
+jacobiana[2][1]=0; jacobiana[2][2]=0; jacobiana[2][3]=0;
+jacobiana[3][1]=0; jacobiana[3][2]=0; jacobiana[3][3]=0;
+
+jacobianainversa[1][1]=0; jacobianainversa[1][2]=0; jacobianainversa[1][3]=0;
+jacobianainversa[2][1]=0; jacobianainversa[2][2]=0; jacobiana[2][3]=0;
+jacobianainversa[3][1]=0; jacobianainversa[3][2]=0; jacobiana[3][3]=0;
+
+
+jacobianatrans[1][1]=0; jacobianatrans[1][2]=0; jacobianatrans[1][3]=0;
+jacobianatrans[2][1]=0; jacobianatrans[2][2]=0; jacobianatrans[2][3]=0;
+jacobianatrans[3][1]=0; jacobianatrans[3][2]=0; jacobianatrans[3][3]=0;
+
+
+
+det2=0;
+
+matproducto[3]=0;
+matproducto[2]=0;
+matproducto[1]=0;
+matproducto[0]=0;
+
+xnueva=0;
+ynueva=0;
+diferencia[3]=0;
+diferencia[2]=0;
+diferencia[1]=0;
+diferencia[0]=0;
+norma=0;
+
+         break;
+
+
+    case 4:
+           printf("\n CUARTO CASO");
+        printf("\n INGRESE VALORES INICIALES:");
+        printf("\n PARA X:");
+        scanf("%f",&xinicial);
+        printf("\n PARA Y:");
+        scanf("%f",&yinicial);
+        printf("\n PARA Z:");
+        scanf("%f",&zinicial);
+        printf("\n NUMERO DE IETRACIONES:");
+        scanf("%d",&iteraciones);
+        printf("\n TOLERANCIA:");
+        scanf("%f",&tolerancia);
+         //mientras las iteraciones sean menores a las que te dieron hacer el proceso
+
+         do{
+         //F(X)
+          fx1[0] =((xinicial*xinicial))-4*(xinicial)+ (yinicial*yinicial);
+          fx1[1]=(xinicial*xinicial)-xinicial-12*yinicial+1;
+          fx1[2]=3*(xinicial*xinicial)-12*xinicial+(yinicial*yinicial)-3*(zinicial*zinicial)+8;
+         printf("\n F(X): x: %f y: %f z= %f",fx1[0],fx1[1],fx1[2]); //faltaba z
+         //JACOBIANA
+         jacobiana[1][1]=2*xinicial-4;
+         jacobiana[1][2]=2*yinicial;
+         jacobiana[1][3]=0;
+         jacobiana[2][1]=2*xinicial-1;
+         jacobiana[2][2]=-12;
+         jacobiana[2][3]=0;
+         jacobiana[3][1]=6*xinicial-12;
+         jacobiana[3][2]=2*yinicial;
+         jacobiana[3][3]=-6*zinicial;
+          printf("\n jacobiana: ");
+          printf("\n %f   %f	%f",jacobiana[1][1],jacobiana[1][2], jacobiana[1][3] );
+          printf("\n %f   %f	%f",jacobiana[2][1],jacobiana[2][2], jacobiana[2][3] );
+          printf("\n %f   %f	%f",jacobiana[3][1],jacobiana[3][2], jacobiana[3][3] );
+
+         //DETERMINANTE
+         det2=(jacobiana[1][1]*jacobiana[2][2] *jacobiana[3][3])+
+              (jacobiana[1][2]*jacobiana[2][3] *jacobiana[3][1])+
+              (jacobiana[1][3]*jacobiana[2][1] *jacobiana[3][2])-
+              (jacobiana[1][3]*jacobiana[2][2] *jacobiana[3][1])-
+              (jacobiana[1][2]*jacobiana[2][1] *jacobiana[3][3])-
+              (jacobiana[1][1]*jacobiana[2][3] *jacobiana[3][2]);
+         printf("\n DETERMINANTE: %f ", det2 );
+
+// jacobiana transuesta
+              jacobianatrans[1][1]=jacobiana[1][1]; jacobianatrans[1][2]=jacobiana[2][1];  jacobianatrans[1][3]=jacobiana[3][1];
+              jacobianatrans[2][1]=jacobiana[1][2]; jacobianatrans[2][2]=jacobiana[2][2];  jacobianatrans[2][3]=jacobiana[3][2];
+              jacobianatrans[3][1]=jacobiana[1][3]; jacobianatrans[3][2]=jacobiana[2][3];  jacobianatrans[3][3]=jacobiana[3][3];
+            printf("\n JACOBIANA TRANSPUESTA: %f  %f   %f \n    %f  %f   %f \n       %f  %f   %f \n ",
+                   jacobianatrans[1][1], jacobianatrans[1][2], jacobianatrans[1][3],
+                   jacobianatrans[2][1], jacobianatrans[2][2], jacobianatrans[2][3],
+                   jacobianatrans[3][1], jacobianatrans[3][2], jacobianatrans[3][3] );
+
+//jacobiana inversa con matriz adjunta
+
+      jacobianainversa[1][1]=(jacobianatrans[2][2]*jacobianatrans[3][3]-jacobianatrans[2][3]*jacobianatrans[3][2])/det2;
+      jacobianainversa[1][2]=-(jacobiana[1][2]*jacobiana[3][3]-jacobiana[1][3]*jacobiana[3][2])/det2;
+      jacobianainversa[1][3]=jacobiana[1][2]*jacobiana[2][3]-jacobiana[1][3]*jacobiana[2][2]/det2;
+
+      jacobianainversa[2][1]=-(jacobianatrans[1][2]*jacobianatrans[3][3]-jacobianatrans[3][2]*jacobianatrans[1][3])/det2;
+      jacobianainversa[2][2]=(jacobianatrans[1][1]*jacobianatrans[3][3]-jacobianatrans[3][1]*jacobianatrans[1][3])/det2;
+      jacobianainversa[2][3]=-(jacobianatrans[1][1]*jacobianatrans[3][2]-jacobianatrans[3][1]*jacobianatrans[1][2])/det2;
+
+      jacobianainversa[3][1]=(jacobianatrans[1][2]*jacobianatrans[2][3]-jacobianatrans[2][2]*jacobianatrans[1][3])/det2;
+      jacobianainversa[3][2]=-(jacobianatrans[1][1]*jacobianatrans[2][3]-jacobianatrans[2][1]*jacobianatrans[1][3])/det2;
+      jacobianainversa[3][3]=(jacobianatrans[1][1]*jacobianatrans[2][2]-jacobianatrans[2][1]*jacobianatrans[1][2])/det2;
+
+
+printf("\n inversa:");
+printf("\n %f %f %f ",jacobianainversa[1][1],jacobianainversa[1][2],jacobianainversa[1][3]);
+printf("\n %f %f %f ",jacobianainversa[2][1],jacobianainversa[2][2],jacobianainversa[2][3]);
+printf("\n %f %f %f ",jacobianainversa[3][1],jacobianainversa[3][2],jacobianainversa[3][3]);
+
+
+
+//MULTIPICACION  JACOBIANA Y F(X)
+		fx1[0] =((xinicial*xinicial))-4*(xinicial)+ (yinicial*yinicial);
+        fx1[1]=(xinicial*xinicial)-xinicial-12*yinicial+1;
+        fx1[2]=3*(xinicial*xinicial)-12*xinicial+(yinicial*yinicial)-3*(zinicial*zinicial)+8;
+        
+        
+       matproducto[0]=jacobianainversa[1][1]*fx1[0]+jacobianainversa[1][2]*fx1[1]+jacobianainversa[1][3]*fx1[2];
+       matproducto[1]=jacobianainversa[2][1]*fx1[0]+jacobianainversa[2][2]*fx1[1]+jacobianainversa[2][3]*fx1[2] ;
+       matproducto[2]=jacobianainversa[3][1]*fx1[0]+jacobianainversa[3][2]*fx1[1]+jacobianainversa[3][3]*fx1[2] ;
+
+        printf("\n PRODUCTO DE JACOBIANA^-1 Y F(X): ");
+          printf("\n %f ",matproducto[0]);
+          printf("\n %f ",matproducto[1]);
+          printf("\n %f ",matproducto[2]);
+//SUSTITUYENDO EN LA FORMULA
+
+      xnueva=xinicial-matproducto[0];
+      ynueva=yinicial-matproducto[1];
+      znueva=zinicial-matproducto[2];
+
+        printf("\n RESULTADO DE LA ITERACION: ");
+          printf("\n %f ",xnueva);
+          printf("\n %f ",ynueva);
+          printf("\n %f ",znueva);
+//diferencia
+       diferencia[0]=xnueva-xinicial;
+       diferencia[1]=ynueva-yinicial;
+       diferencia[2]=znueva-zinicial;
+       printf("\n diferencia: ");
+          printf("\n %f ",diferencia[0]);
+          printf("\n %f ",diferencia[1]);
+          printf("\n %f ",diferencia[2]);
+//norma
+
+        if(fabs (diferencia[0]) > (    fabs (diferencia[1])   && fabs(diferencia[2])   )    )
+        { norma=fabs (diferencia[0]);
+          printf("\n norma: %f ",norma);}
+
+        if(fabs (diferencia[1]) > (    fabs (diferencia[0])   && fabs(diferencia[2])   )    )
+        { norma=fabs (diferencia[1]);
+          printf("\n norma: %f ",norma);}
+
+        if(fabs (diferencia[2]) > (    fabs (diferencia[1])   && fabs(diferencia[0])   )    )
+        { norma=fabs (diferencia[2]);
+          printf("\n norma: %f ",norma);}
+
+
+
+//en caso de alcanzar tolerancia
+ if(norma<=tolerancia)
+ {
+        printf("\n TOLERANCIA ALCANZADA: %f ",norma);
+        printf("\n DESEA CONTINUAR LAS ITERACIONES?:1. SI 2. NO  ");
+        scanf("%d",&contit);
+
+
+ }
+ //desicion si se alcanza la tolerancia
+ switch(contit)
+        {
+            case 1: continue;
+            break;
+            case 2:     printf("\n DESEA CONTINUAR EN EL PROGRAMA?:1. SI 2. NO  ");
+        scanf("%d",&contmet);
+        if (contmet==1){
+xinicial=0;
+yinicial=0;
+zinicial=0;
+iteraciones=0;
+tolerancia=0;
+contadoriteraciones=0;
+contit=0;
+contmet=0;
+fx1[0]=0;
+fx1[1]=0;
+fx1[2]=0;
+fx1[3]=0;
+jacobiana[1][1]=0; jacobiana[1][2]=0; jacobiana[1][3]=0;
+jacobiana[2][1]=0; jacobiana[2][2]=0; jacobiana[2][3]=0;
+jacobiana[3][1]=0; jacobiana[3][2]=0; jacobiana[3][3]=0;
+
+jacobianainversa[1][1]=0; jacobianainversa[1][2]=0; jacobianainversa[1][3]=0;
+jacobianainversa[2][1]=0; jacobianainversa[2][2]=0; jacobiana[2][3]=0;
+jacobianainversa[3][1]=0; jacobianainversa[3][2]=0; jacobiana[3][3]=0;
+
+
+jacobianatrans[1][1]=0; jacobianatrans[1][2]=0; jacobianatrans[1][3]=0;
+jacobianatrans[2][1]=0; jacobianatrans[2][2]=0; jacobianatrans[2][3]=0;
+jacobianatrans[3][1]=0; jacobianatrans[3][2]=0; jacobianatrans[3][3]=0;
+
+
+
+det2=0;
+
+matproducto[3]=0;
+matproducto[2]=0;
+matproducto[1]=0;
+matproducto[0]=0;
+
+xnueva=0;
+ynueva=0;
+diferencia[3]=0;
+diferencia[2]=0;
+diferencia[1]=0;
+diferencia[0]=0;
+norma=0;
+main();}
+        else {
+            //acomodas variables para la siguiente iteracion
+contadoriteraciones++;
+ xinicial=xnueva;
+ yinicial=ynueva;
+ funcelegir=0;break;}
+
+            break;
+        }
+//acomodas variables para la siguiente iteracion
+contadoriteraciones++;
+ xinicial=xnueva;
+ yinicial=ynueva;
+ zinicial=znueva; //faltaba este
+ funcelegir=0;
+
+
+         }while(contadoriteraciones<=iteraciones);
+
+//INICIAS LAS VARIABLES PARA PODER OPERAR DE NUEVO
+contadoriteraciones=0;
+ xinicial=0;
+ yinicial=0;
+ funcelegir=0;
+ //PREGUNTAS SI SE CONTINUARA EN EL METODO
+
+  printf("\n DESEA CONTINUAR EN EL PROGRAMA?:1. SI 2. NO  ");
+        scanf("%d",&contmet);
+        if (contmet==1){main();}
+        else {
+xinicial=0;
+yinicial=0;
+zinicial=0;
+iteraciones=0;
+tolerancia=0;
+contadoriteraciones=0;
+contit=0;
+contmet=0;
+fx1[0]=0;
+fx1[1]=0;
+fx1[2]=0;
+fx1[3]=0;
+jacobiana[1][1]=0; jacobiana[1][2]=0; jacobiana[1][3]=0;
+jacobiana[2][1]=0; jacobiana[2][2]=0; jacobiana[2][3]=0;
+jacobiana[3][1]=0; jacobiana[3][2]=0; jacobiana[3][3]=0;
+
+jacobianainversa[1][1]=0; jacobianainversa[1][2]=0; jacobianainversa[1][3]=0;
+jacobianainversa[2][1]=0; jacobianainversa[2][2]=0; jacobiana[2][3]=0;
+jacobianainversa[3][1]=0; jacobianainversa[3][2]=0; jacobiana[3][3]=0;
+
+
+jacobianatrans[1][1]=0; jacobianatrans[1][2]=0; jacobianatrans[1][3]=0;
+jacobianatrans[2][1]=0; jacobianatrans[2][2]=0; jacobianatrans[2][3]=0;
+jacobianatrans[3][1]=0; jacobianatrans[3][2]=0; jacobianatrans[3][3]=0;
+
+
+
+det2=0;
+
+matproducto[3]=0;
+matproducto[2]=0;
+matproducto[1]=0;
+matproducto[0]=0;
+
+xnueva=0;
+ynueva=0;
+diferencia[3]=0;
+diferencia[2]=0;
+diferencia[1]=0;
+diferencia[0]=0;
+norma=0;
+                break;}
+               xinicial=0;
+yinicial=0;
+zinicial=0;
+iteraciones=0;
+tolerancia=0;
+contadoriteraciones=0;
+contit=0;
+contmet=0;
+fx1[0]=0;
+fx1[1]=0;
+fx1[2]=0;
+fx1[3]=0;
+jacobiana[1][1]=0; jacobiana[1][2]=0; jacobiana[1][3]=0;
+jacobiana[2][1]=0; jacobiana[2][2]=0; jacobiana[2][3]=0;
+jacobiana[3][1]=0; jacobiana[3][2]=0; jacobiana[3][3]=0;
+
+jacobianainversa[1][1]=0; jacobianainversa[1][2]=0; jacobianainversa[1][3]=0;
+jacobianainversa[2][1]=0; jacobianainversa[2][2]=0; jacobiana[2][3]=0;
+jacobianainversa[3][1]=0; jacobianainversa[3][2]=0; jacobiana[3][3]=0;
+
+
+jacobianatrans[1][1]=0; jacobianatrans[1][2]=0; jacobianatrans[1][3]=0;
+jacobianatrans[2][1]=0; jacobianatrans[2][2]=0; jacobianatrans[2][3]=0;
+jacobianatrans[3][1]=0; jacobianatrans[3][2]=0; jacobianatrans[3][3]=0;
+
+
+
+det2=0;
+
+matproducto[3]=0;
+matproducto[2]=0;
+matproducto[1]=0;
+matproducto[0]=0;
+
+xnueva=0;
+ynueva=0;
+diferencia[3]=0;
+diferencia[2]=0;
+diferencia[1]=0;
+diferencia[0]=0;
+norma=0;
+
+        break;
+
+}
+}
